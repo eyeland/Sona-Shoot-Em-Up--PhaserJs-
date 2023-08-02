@@ -16,14 +16,14 @@ class GameScene extends Phaser.Scene {
 
     create() {
         // Call the custom resize function initially to set up the game size
-    this.resizeGame();
+        this.resizeGame();
 
-    // Set up a listener for the window resize event
-    window.addEventListener('resize', this.resizeGame.bind(this));
+        // Set up a listener for the window resize event
+        window.addEventListener('resize', this.resizeGame.bind(this));
         // Add game elements to the scene
 
-        // Create a rectangle as the player
-        this.player = this.add.sprite(40, 30, 'sona')
+
+        this.player = this.add.sprite(this.sys.game.config.width * 0.5, this.sys.game.config.height * 0.8, 'sona')
         this.player.setScale(0.2)
         this.player.setDepth(1)
         // Enable physics for the player (assuming Arcade Physics)
@@ -56,6 +56,17 @@ class GameScene extends Phaser.Scene {
         // Calculate the actual width and height of the game canvas based on the device's screen size
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
+
+        // Update the game canvas size to fit the screen
+        this.sys.game.config.width = screenWidth;
+        this.sys.game.config.height = screenHeight;
+        this.sys.game.renderer.resize(screenWidth, screenHeight);
+
+        // Update the game camera to fit the resized canvas
+        this.cameras.main.setViewport(0, 0, screenWidth, screenHeight);
+
+        // Resize the game world to fit the new canvas size
+        this.physics.world.setBounds(0, 0, screenWidth, screenHeight);
 
         // Calculate the aspect ratio of the game
         const gameAspectRatio = this.sys.game.config.width / this.sys.game.config.height;
