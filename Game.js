@@ -3,6 +3,11 @@ class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameScene' });
         this.enemyCounter = 0;
+        // Add a flag to track if the game is running
+        this.isGameRunning = false;
+
+        // Initialize player speed
+        this.playerSpeed = 4; // Adjust the player speed as needed
     }
 
 
@@ -18,9 +23,43 @@ class GameScene extends Phaser.Scene {
         // Call the custom resize function initially to set up the game size
         this.resizeGame();
 
+        // Create the game canvas
+        this.gameCanvas = this.sys.game.canvas;
+
+        // Add the start button
+        this.startButton = this.add.text(
+            this.sys.game.config.width / 2,
+            this.sys.game.config.height / 2,
+            'Start Game',
+            { fontSize: '34px', fill: '#fff' }
+        ).setOrigin(0.5).setInteractive();
+
+        // Add the pause button (initially hidden)
+        this.pauseButton = this.add.text(
+            20,
+            20,
+            'Pause',
+            { fontSize: '18px', fill: '#fff' }
+        ).setInteractive();
+        this.pauseButton.visible = false;
+
+        // Add click event listener for the start button
+        this.startButton.on('pointerdown', () => {
+            // Start the game and give focus to the canvas
+            this.startGame();
+        });
+
+        // Add click event listener for the pause button
+        this.pauseButton.on('pointerdown', () => {
+            // Pause the game when the pause button is clicked
+            this.isGameRunning = false;
+            this.pauseButton.visible = false;
+            // ... Add logic to pause the game, stop enemies, timers, etc.
+        });
+
         // Set up a listener for the window resize event
         window.addEventListener('resize', this.resizeGame.bind(this));
-        // Add game elements to the scene
+
 
 
         this.player = this.add.sprite(this.sys.game.config.width * 0.5, this.sys.game.config.height * 0.8, 'sona')
@@ -33,7 +72,7 @@ class GameScene extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
         // Create the scrolling background
         this.background = this.add.tileSprite(0, 0, this.sys.game.config.width, this.sys.game.config.height, 'background');
-        this.background.setOrigin(0, 0);
+        this.background.setOrigin(0, 0).setDepth(-1);
 
         // Slow scrolling speed (change this value to adjust the speed)
         this.scrollSpeed = 1;
@@ -49,8 +88,36 @@ class GameScene extends Phaser.Scene {
             loop: true, // Set to true to make the timer repeat indefinitely
         });
 
+        // Add buttons to the game scene
+        this.add.existing(this.startButton);
+        this.add.existing(this.pauseButton);
+
 
     }
+
+    startGame() {
+        // Hide the start button and show the pause button
+        this.startButton.visible = false;
+        this.pauseButton.visible = true;
+
+        // Set focus on the game canvas to capture keyboard events
+        this.gameCanvas.focus();
+
+        // Set up an enemy shooting timer
+        this.shootingTimer = this.time.addEvent({
+            delay: 1500, // Adjust this value to control the shooting interval (in milliseconds)
+            callback: this.enemyShoot,
+            callbackScope: this,
+            loop: true, // Set to true to make the timer repeat indefinitely
+        });
+
+        // ... Add other game initialization logic ...
+
+        // Set the game as running
+        this.isGameRunning = true;
+    }
+
+
 
     resizeGame() {
         // Calculate the actual width and height of the game canvas based on the device's screen size

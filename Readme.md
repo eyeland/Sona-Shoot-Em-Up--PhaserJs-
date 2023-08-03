@@ -4,4 +4,4 @@ Sona Player Art Work - https://imgbin.com/png/AsMmtHr6/league-of-legends-world-c
 
 Grass Sprites - https://opengameart.org/content/topdown-tileset
 
-Bullet Ammo - https://imgbin.com/png/XXHPAzwt/bullet-icon-png
+Bullet Ammo - made by me
